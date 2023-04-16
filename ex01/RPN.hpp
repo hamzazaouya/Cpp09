@@ -10,6 +10,14 @@ class RPN
         RPN(){}
         void calc(char *);
         ~RPN(){}
+    class ErrorException: public std::exception
+    {
+        public:
+            const char* what() const throw()
+            {
+                return ("Error");
+            }
+    };
 };
 
 #endif

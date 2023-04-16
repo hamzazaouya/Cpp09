@@ -6,7 +6,14 @@ int main(int argc, char **argv)
 
     if(argc == 2)
     {
-        rpn.calc(argv[1]);
+        try
+        {
+            rpn.calc(argv[1]);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
     else
         std::cout << "Error: Bad Argument" << std::endl;
