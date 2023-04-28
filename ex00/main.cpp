@@ -14,9 +14,7 @@ int main(int argc, char **argv)
     try
     {
         if(argc > 1)
-        {
-            (void) argv;
-        }
+            BitcoinExchange btc(argv[1]);
         else
             throw FileNotOpenException();
     }
