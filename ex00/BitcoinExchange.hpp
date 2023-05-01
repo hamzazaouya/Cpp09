@@ -13,8 +13,6 @@ class BitcoinExchange
         std::string                     _date;
         float                           _value;
         char *                          _input_file;
-        size_t                          _min_year;
-        size_t                          _max_year;
     public:
         BitcoinExchange();
         BitcoinExchange(char *input_file);
@@ -22,9 +20,12 @@ class BitcoinExchange
         void operator=(const BitcoinExchange &);
         ~BitcoinExchange();
 
-        void _fillMapData();
-        void _executeFile();
-        bool check_date() const;
+        void        _fillMapData();
+        void        _executeFile();
+        void        _check_year(std::string &);
+        void        _check_mounth(std::string &, std::string &);
+        void        _check_day(std::string &token, unsigned int &mounth);
+        void        check_date() ;
         std::string _token(std::istringstream &);
 
     class FileNotExistException: public std::exception

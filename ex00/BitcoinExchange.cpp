@@ -19,8 +19,6 @@ void BitcoinExchange::operator=(const BitcoinExchange &rhs)
     this->_input_file = rhs._input_file;
 }
 
-
-
 BitcoinExchange::BitcoinExchange(char *file): _input_file(file)
 {
     this->_fillMapData();
@@ -31,22 +29,70 @@ std::string BitcoinExchange::_token(std::istringstream &iss)
 {
     std::string token;
 
+    if(iss.eof())
+        throw BadInputException();
     std::getline(iss, token, ' ');
     return (token);
 }
 
-bool BitcoinExchange::check_date() const
+void  BitcoinExchange::_check_mounth(std::string &token1, std::string &token2)
 {
-    size_t      num;
-    std::string token;
+    std::istringstream  iss(token1);
+    unsigned int        mounth;
+
+    iss >> mounth;
+    if(mounth > 12 || mounth < 1)
+        throw BadInputException();
+    this->_check_day(token2, mounth);
+}
+
+void  BitcoinExchange::_check_day(std::string &token, unsigned int &mounth)
+{
+    std::istringstream iss(token);
+    int day;
+    int arr[] = {31, 28, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    iss >> day;
+    if(day < 0 || day > arr[mounth - 1])
+        throw BadInputException();
+}
+
+void    BitcoinExchange::_check_year(std::string &token)
+{
+    int max_y;
+    int min_y;
+    int year;
+    std::string max_year;
+    std::string min_year;
+    std::istringstream iss_max_year(this->_data.rbegin()->first);
+    std::istringstream iss_min_year(this->_data.begin()->first);
+
+    std::getline(iss_max_year, max_year, '-');
+    std::getline(iss_min_year, min_year, '-');
+    std::istringstream is_max_year(max_year);
+    std::istringstream is_min_year(min_year);
+    std::istringstream is_year(token);
+
+    is_max_year >> max_y;
+    is_min_year >> min_y;
+    is_year >> year;
+
+    if(year < min_y || year > max_y)
+        throw BadInputException();
+}
+
+void BitcoinExchange::check_date()
+{
+    std::string token_year;
+    std::string token_mounth;
+    std::string token_day;
     std::istringstream iss(this->_date);
 
-    if(this->_date > this->_data.rbegin()->first || this->_date < this->_data.begin()->first)
-        throw BadInputException();
-    std::getline(iss, token, '-');
-    std::getline(iss, token, "-");
-    
-
+    std::getline(iss, token_year, '-');
+    this->_check_year(token_year);
+    std::getline(iss, token_mounth, '-');
+    std::getline(iss, token_day, '-');
+    this->_check_mounth(token_mounth, token_day);
 }
 
 void BitcoinExchange::_executeFile()
@@ -68,17 +114,18 @@ void BitcoinExchange::_executeFile()
         try 
         {
             this->_date =  this->_token(iss);
-            if(!check_date())
+            check_date();
+            if(this->_token(iss) != "|")
+                throw BadInputException();
+            std::stringstream is(this->_token(iss));
+            if(!iss.eof())
                 throw BadInputException();
         }
         catch(const std::exception& e)
         {
-            std::cerr << e.what() << std::endl;
+            std::cerr << e.what() << this->_date << std::endl;
         }
-        // if(iss.eof())
-        //     std::cout << "end of string" << std::endl;
-        // else
-        //     std::cout << "Not the end of string" << std::endl;
+        
     }
 }
 
@@ -88,7 +135,7 @@ void BitcoinExchange::_fillMapData()
     std::string line;
     std::string token1;
     std::string token2;
-    size_t      year;
+    //size_t      year;
     float f;
     
     data_file.open("data.csv");

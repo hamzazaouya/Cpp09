@@ -3,12 +3,11 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class PmergeMe
 {
     std::vector<int> nums1;
-    std::vector<std::pair<int, int>> pairs;
-    int unpair;
 
     public:
     PmergeMe();
