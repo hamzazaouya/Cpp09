@@ -4,14 +4,20 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <deque>
 
 class PmergeMe
 {
     std::vector<int> nums1;
+    std::deque<int> nums2;
+    
 
     public:
     PmergeMe();
-    void make_pairs();
+    PmergeMe(std::vector<int> &nums);
+    void make_pairs_vector();
+    void make_pairs_deque();
     ~PmergeMe();
 };
 
