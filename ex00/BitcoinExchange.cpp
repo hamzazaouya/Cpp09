@@ -100,6 +100,7 @@ void BitcoinExchange::_executeFile()
     std::ifstream       file;
     std::string         line;
     std::string         token;
+    float               value;
 
     file.open(this->_input_file);
     if(!file.is_open())
@@ -110,7 +111,6 @@ void BitcoinExchange::_executeFile()
     while(std::getline(file, line))
     {
         std::istringstream  iss(line);
-
         try 
         {
             this->_date =  this->_token(iss);
@@ -120,12 +120,23 @@ void BitcoinExchange::_executeFile()
             std::stringstream is(this->_token(iss));
             if(!iss.eof())
                 throw BadInputException();
+            is >> this->_value;
+            if(this->_value < 0)
+                throw NotPositiveNumberException();
+            else if(this->_value > 1000)
+                throw LargeNumberException();
+            value = this->_data.lower_bound(this->_date)->second;
+            std::cout << this->_date << " => " << this->_value << " = " << this->_value * value <<  std::endl;
         }
         catch(const std::exception& e)
         {
-            std::cerr << e.what() << this->_date << std::endl;
+            if (const NotPositiveNumberException* npnException = dynamic_cast<const NotPositiveNumberException*>(&e))
+                std::cout << e.what() << std::endl;
+            else if(const LargeNumberException* npnException = dynamic_cast<const LargeNumberException*>(&e))
+                std::cout << e.what() << std::endl;
+            else
+                std::cout << e.what() << this->_date << std::endl;
         }
-        
     }
 }
 

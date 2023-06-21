@@ -5,6 +5,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 class BitcoinExchange
 {
@@ -52,6 +53,24 @@ class BitcoinExchange
             const char* what() const throw()
             {
                 return ("Error: bad input => ");
+            }
+    };
+
+    class NotPositiveNumberException: public std::exception
+    {
+        public:
+            const char* what() const throw()
+            {
+                return ("Error: not a positive number.");
+            }
+    };
+
+    class LargeNumberException: public std::exception
+    {
+        public:
+            const char* what() const throw()
+            {
+                return ("Error: too large a number.");
             }
     };
 };
