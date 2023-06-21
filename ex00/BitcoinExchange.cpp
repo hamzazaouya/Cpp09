@@ -135,7 +135,6 @@ void BitcoinExchange::_fillMapData()
     std::string line;
     std::string token1;
     std::string token2;
-    //size_t      year;
     float f;
     
     data_file.open("data.csv");

@@ -7,14 +7,16 @@ PmergeMe::PmergeMe()
 
 PmergeMe::PmergeMe(std::vector<int> &nums): nums1(nums), nums2(nums.begin(), nums.end())
 {
+    std::cout << "Before: ";
+    for(int i = 0; i < static_cast<int> (nums1.size()); i++)
+        std::cout << this->nums1[i] << " ";
+    std::cout << std::endl;
     this->make_pairs_vector();
+    std::cout << "After:  ";
     for(int i = 0 ; i < static_cast<int> (this->nums1.size()); i++)
         std::cout << this->nums1[i] << " ";
     std::cout << std::endl;
     this->make_pairs_deque();
-    for(int i = 0 ; i < static_cast<int> (this->nums2.size()); i++)
-        std::cout << this->nums2[i] << " ";
-    std::cout << std::endl;
 }
 
 void PmergeMe::make_pairs_vector()
