@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <cctype>
+#include <string>
 
 class BitcoinExchange
 {
@@ -23,11 +25,15 @@ class BitcoinExchange
 
         void        _fillMapData();
         void        _executeFile();
-        void        _check_year(std::string &);
-        void        _check_mounth(std::string &, std::string &);
-        void        _check_day(std::string &token, unsigned int &mounth);
+        void        _check_year(std::string );
+        void        _check_mounth(std::string , std::string );
+        void        _check_day(std::string token, unsigned int mounth);
         void        check_date() ;
+        void        caluclate();
+        void        check_date_token();
+        std::string is_str_all_digit(std::string token);
         std::string _token(std::istringstream &);
+        void        check_value_token(std::string token);
 
     class FileNotExistException: public std::exception
     {

@@ -31,11 +31,23 @@ std::string BitcoinExchange::_token(std::istringstream &iss)
 
     if(iss.eof())
         throw BadInputException();
-    std::getline(iss, token, ' ');
+    iss >> std::ws;
+    if(!std::getline(iss, token, ' '))
+        throw BadInputException();
     return (token);
 }
 
-void  BitcoinExchange::_check_mounth(std::string &token1, std::string &token2)
+std::string BitcoinExchange::is_str_all_digit(std::string token)
+{
+    for(int i = 0; i < static_cast<int> (token.length()); i++)
+    {
+        if(!isdigit(token[i]))
+            throw BadInputException();
+    }
+    return (token);
+}
+
+void  BitcoinExchange::_check_mounth(std::string token1, std::string token2)
 {
     std::istringstream  iss(token1);
     unsigned int        mounth;
@@ -46,18 +58,18 @@ void  BitcoinExchange::_check_mounth(std::string &token1, std::string &token2)
     this->_check_day(token2, mounth);
 }
 
-void  BitcoinExchange::_check_day(std::string &token, unsigned int &mounth)
+void  BitcoinExchange::_check_day(std::string token, unsigned int mounth)
 {
     std::istringstream iss(token);
     int day;
     int arr[] = {31, 28, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     iss >> day;
-    if(day < 0 || day > arr[mounth - 1])
+    if(day < 1 || day > arr[mounth - 1])
         throw BadInputException();
 }
 
-void    BitcoinExchange::_check_year(std::string &token)
+void    BitcoinExchange::_check_year(std::string token)
 {
     int max_y;
     int min_y;
@@ -83,16 +95,40 @@ void    BitcoinExchange::_check_year(std::string &token)
 
 void BitcoinExchange::check_date()
 {
-    std::string token_year;
-    std::string token_mounth;
-    std::string token_day;
-    std::istringstream iss(this->_date);
+    if(this->_date.length() != 10)
+        throw BadInputException();
+    for(int i = 0; i < static_cast<int> (this->_date.length()); i++)
+    {
+        if(!std::isdigit(this->_date[i]) && this->_date[i] != '-')
+            throw BadInputException();
+    }
+    this->_check_year(is_str_all_digit(this->_date.substr(0, 4)));
+    this->_check_mounth(is_str_all_digit(this->_date.substr(5, 2)), is_str_all_digit(this->_date.substr(8, 2)));
+}
 
-    std::getline(iss, token_year, '-');
-    this->_check_year(token_year);
-    std::getline(iss, token_mounth, '-');
-    std::getline(iss, token_day, '-');
-    this->_check_mounth(token_mounth, token_day);
+void BitcoinExchange::check_value_token(std::string token)
+{
+    int dots = 0;
+    int i = 0;
+    if(token[0] == '-')
+        i = 1;
+    for(; i < static_cast<int>(token.length()); i++)
+    {
+        if(!isdigit(token[i]) && token[i] != '.')
+            throw BadInputException();
+        else if(token[i] == '.')
+        {
+            dots++;
+            if(dots > 1)
+                throw BadInputException();
+        }
+    }
+    std::stringstream is(token);
+    is >> this->_value;
+    if(this->_value < 0)
+        throw NotPositiveNumberException();
+    else if(this->_value > 1000)
+        throw LargeNumberException();
 }
 
 void BitcoinExchange::_executeFile()
@@ -100,7 +136,6 @@ void BitcoinExchange::_executeFile()
     std::ifstream       file;
     std::string         line;
     std::string         token;
-    float               value;
 
     file.open(this->_input_file);
     if(!file.is_open())
@@ -111,22 +146,19 @@ void BitcoinExchange::_executeFile()
     while(std::getline(file, line))
     {
         std::istringstream  iss(line);
+        iss >> std::ws;
+        if(iss.eof())
+            continue ;
         try 
         {
             this->_date =  this->_token(iss);
             check_date();
             if(this->_token(iss) != "|")
                 throw BadInputException();
-            std::stringstream is(this->_token(iss));
+            check_value_token(this->_token(iss));
             if(!iss.eof())
                 throw BadInputException();
-            is >> this->_value;
-            if(this->_value < 0)
-                throw NotPositiveNumberException();
-            else if(this->_value > 1000)
-                throw LargeNumberException();
-            value = this->_data.lower_bound(this->_date)->second;
-            std::cout << this->_date << " => " << this->_value << " = " << this->_value * value <<  std::endl;
+            this->caluclate();
         }
         catch(const std::exception& e)
         {
@@ -137,6 +169,22 @@ void BitcoinExchange::_executeFile()
             else
                 std::cout << e.what() << this->_date << std::endl;
         }
+    }
+}
+
+void    BitcoinExchange::caluclate()
+{
+    std::map<std::string, float>::iterator iter;
+    iter = this->_data.find(this->_date);
+
+    if(iter != this->_data.end())
+        std::cout << this->_date << " => " << this->_value << " = " << this->_value * iter->second <<  std::endl;
+    else
+    {
+        iter = this->_data.upper_bound(this->_date);
+        if(iter != this->_data.begin())
+            iter--;
+        std::cout << this->_date << " => " << this->_value << " = " << this->_value * iter->second <<  std::endl;
     }
 }
 
