@@ -1,22 +1,32 @@
 #include "PmergeMe.hpp"
 
-PmergeMe::PmergeMe()
-{
-
-}
+PmergeMe::PmergeMe() {}
 
 PmergeMe::PmergeMe(std::vector<int> &nums): nums1(nums), nums2(nums.begin(), nums.end())
 {
+    struct timeval start_t1,start_t2, end_t1, end_t2;
+
     std::cout << "Before: ";
     for(int i = 0; i < static_cast<int> (nums1.size()); i++)
         std::cout << this->nums1[i] << " ";
     std::cout << std::endl;
+
+    gettimeofday(&start_t1, NULL);
     this->make_pairs_vector();
+    gettimeofday(&end_t1, NULL);
+        std::cout<<"Time to process a range of " <<" elements with std::deque : "\
+        << static_cast<float>(((end_t1.tv_sec - start_t1.tv_sec) / 1000000.0) \
+        + end_t1.tv_usec - start_t1.tv_usec) <<" us "<<std::endl;
     std::cout << "After:  ";
     for(int i = 0 ; i < static_cast<int> (this->nums1.size()); i++)
         std::cout << this->nums1[i] << " ";
     std::cout << std::endl;
+    gettimeofday(&start_t2, NULL);
     this->make_pairs_deque();
+    gettimeofday(&end_t2, NULL);
+        std::cout<<"Time to process a range of " <<" elements with std::deque : "\
+        << static_cast<float>(((end_t2.tv_sec - start_t2.tv_sec) / 1000000.0) \
+        + end_t2.tv_usec - start_t2.tv_usec) <<" us "<<std::endl;
 }
 
 void PmergeMe::make_pairs_vector()
@@ -53,6 +63,9 @@ void PmergeMe::make_pairs_vector()
 
 void PmergeMe::make_pairs_deque()
 {
+    struct timeval start_t, end_t;
+    gettimeofday(&start_t, NULL);
+
     std::vector<std::pair<int, int> > pairs;
     int unpair = -1;
     if (this->nums2.size() % 2)
@@ -81,6 +94,8 @@ void PmergeMe::make_pairs_deque()
         std::deque<int>::iterator itr = std::upper_bound(this->nums2.begin(), this->nums2.end(), unpair);
         this->nums2.insert(itr, unpair);
     }
+    gettimeofday(&end_t, NULL);
+        std::cout<<"Time to process a range of " <<" elements with std::deque : "<< static_cast<float>(((end_t.tv_sec - start_t.tv_sec) / 1000000.0) + end_t.tv_usec - start_t.tv_usec) <<" us "<<std::endl;
 }
 
 PmergeMe::~PmergeMe() {}

@@ -62,6 +62,7 @@ void  BitcoinExchange::_check_day(std::string token, unsigned int mounth)
 {
     std::istringstream iss(token);
     int day;
+    cout << "----->" << std::endl;
     int arr[] = {31, 28, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     iss >> day;

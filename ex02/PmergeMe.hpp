@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <sstream>
 #include <deque>
+#include <sys/time.h>
 
 class PmergeMe
 {
