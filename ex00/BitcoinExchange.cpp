@@ -62,8 +62,7 @@ void  BitcoinExchange::_check_day(std::string token, unsigned int mounth)
 {
     std::istringstream iss(token);
     int day;
-    cout << "----->" << std::endl;
-    int arr[] = {31, 28, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int arr[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     iss >> day;
     if(day < 1 || day > arr[mounth - 1])
@@ -72,25 +71,19 @@ void  BitcoinExchange::_check_day(std::string token, unsigned int mounth)
 
 void    BitcoinExchange::_check_year(std::string token)
 {
-    int max_y;
     int min_y;
     int year;
-    std::string max_year;
-    std::string min_year;
-    std::istringstream iss_max_year(this->_data.rbegin()->first);
-    std::istringstream iss_min_year(this->_data.begin()->first);
 
-    std::getline(iss_max_year, max_year, '-');
+    std::string min_year;
+    std::istringstream iss_min_year(this->_data.begin()->first);
     std::getline(iss_min_year, min_year, '-');
-    std::istringstream is_max_year(max_year);
     std::istringstream is_min_year(min_year);
     std::istringstream is_year(token);
 
-    is_max_year >> max_y;
     is_min_year >> min_y;
     is_year >> year;
 
-    if(year < min_y || year > max_y)
+    if(this->_data.begin()->first > this->_date)
         throw BadInputException();
 }
 
@@ -103,8 +96,10 @@ void BitcoinExchange::check_date()
         if(!std::isdigit(this->_date[i]) && this->_date[i] != '-')
             throw BadInputException();
     }
-    this->_check_year(is_str_all_digit(this->_date.substr(0, 4)));
-    this->_check_mounth(is_str_all_digit(this->_date.substr(5, 2)), is_str_all_digit(this->_date.substr(8, 2)));
+    if(this->_date[4] != '-' || this->_date[7] != '-')
+        throw BadInputException();
+    this->_check_year(this->_date.substr(0, 4));
+    this->_check_mounth(this->_date.substr(5, 2), this->_date.substr(8, 2));
 }
 
 void BitcoinExchange::check_value_token(std::string token)

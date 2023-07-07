@@ -3,8 +3,8 @@
 
 int main(int argc, char **argv)
 {
-    int              num;
-    std::vector<int> nums;
+    int                 num;
+    std::vector<int>    nums;
 
     for(int i = 1; i < argc; i++)
     {
