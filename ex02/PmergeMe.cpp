@@ -10,7 +10,6 @@ PmergeMe::PmergeMe(std::vector<int> &nums): nums1(nums), nums2(nums.begin(), num
     for(int i = 0; i < static_cast<int> (nums1.size()); i++)
         std::cout << this->nums1[i] << " ";
     std::cout << std::endl;
-
     gettimeofday(&start_t1, NULL);
     this->make_pairs_vector();
     gettimeofday(&end_t1, NULL);
@@ -21,7 +20,7 @@ PmergeMe::PmergeMe(std::vector<int> &nums): nums1(nums), nums2(nums.begin(), num
     gettimeofday(&start_t2, NULL);
     this->make_pairs_deque();
     gettimeofday(&end_t2, NULL);
-    std::cout<<"Time to process a range of " <<" elements with std::deque : "\
+    std::cout<<"Time to process a range of " <<" elements with std::vector : "\
         << static_cast<float>(((end_t1.tv_sec - start_t1.tv_sec) / 1000000.0) \
         + end_t1.tv_usec - start_t1.tv_usec) <<" us "<<std::endl;
     std::cout<<"Time to process a range of " <<" elements with std::deque : "\

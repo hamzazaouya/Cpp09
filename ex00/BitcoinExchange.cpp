@@ -9,6 +9,7 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange &rhs)
     this->_date = rhs._date;
     this->_value = rhs._value;
     this->_input_file = rhs._input_file;
+    this->_csv_file = rhs._csv_file;
 }
 
 void BitcoinExchange::operator=(const BitcoinExchange &rhs)
@@ -17,12 +18,20 @@ void BitcoinExchange::operator=(const BitcoinExchange &rhs)
     this->_date = rhs._date;
     this->_value = rhs._value;
     this->_input_file = rhs._input_file;
+    this->_csv_file = rhs._csv_file;
 }
 
-BitcoinExchange::BitcoinExchange(char *file): _input_file(file)
+BitcoinExchange::BitcoinExchange(char *file, char *csv_file): _input_file(file), _csv_file(csv_file)
 {
-    this->_fillMapData();
-    this->_executeFile();
+    try
+    {
+        this->_fillMapData();
+        this->_executeFile();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 std::string BitcoinExchange::_token(std::istringstream &iss)
@@ -192,10 +201,12 @@ void BitcoinExchange::_fillMapData()
     std::string token2;
     float f;
     
-    data_file.open("data.csv");
+    data_file.open(this->_csv_file);
     if(!data_file.is_open())
         throw FileNotExistException();
     std::getline(data_file, line);
+    if(line.compare("date,exchange_rate"))
+       throw FileContentErrorException();
     while(std::getline(data_file, line))
     {
         std::istringstream iss(line);

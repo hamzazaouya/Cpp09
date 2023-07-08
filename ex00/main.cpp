@@ -5,7 +5,7 @@ class FileNotOpenException: public std::exception
     public:
         const char* what() const throw()
         {
-            return ("Error: could not open file.");
+            return ("Error: You have to provide Two Or more files");
         }
 };
 
@@ -13,8 +13,11 @@ int main(int argc, char **argv)
 {
     try
     {
-        if(argc > 1)
-            BitcoinExchange btc(argv[1]);
+        if(argc > 2)
+        {
+            for(int i = 2; i < argc; i++)
+                BitcoinExchange btc(argv[i], argv[1]);
+        }
         else
             throw FileNotOpenException();
     }

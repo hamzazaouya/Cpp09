@@ -16,9 +16,11 @@ class BitcoinExchange
         std::string                     _date;
         float                           _value;
         char *                          _input_file;
+        char *                          _csv_file;
+
     public:
         BitcoinExchange();
-        BitcoinExchange(char *input_file);
+        BitcoinExchange(char *input_file, char *csv);
         BitcoinExchange(const BitcoinExchange &);
         void operator=(const BitcoinExchange &);
         ~BitcoinExchange();
